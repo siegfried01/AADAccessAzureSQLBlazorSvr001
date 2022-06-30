@@ -110,7 +110,7 @@ resource website 'Microsoft.Web/sites@2020-12-01' = {
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/sourcecontrols?tabs=bicep 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sourcecontrols?tabs=bicep
-
+/*
   resource srcControls 'sourcecontrols@2021-03-01' = {
     name: 'web'
     properties: {
@@ -128,4 +128,5 @@ resource website 'Microsoft.Web/sites@2020-12-01' = {
       }      
     }
   }
+  */
 }
