@@ -4,7 +4,7 @@
    $name='AADAccessAzureSQLBlazorSvr'
    $rg="rg_$name"
    $loc='westus2'
-   write-output "End common prolog"
+   write-output "End common prolog loc=$loc rg=$rg"
    End common prolog commands
 
    emacs 1
@@ -36,6 +36,21 @@
    az.cmd ad sp create-for-rbac --name $sp --sdk-auth --role contributor --scopes $id
    write-output "go to github settings->secrets and create a secret called AZURE_CREDENTIALS with the above output"
    write-output "{`n`"`$schema`": `"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#`",`n `"contentVersion`": `"1.0.0.0`",`n `"resources`": [] `n}" | Out-File -FilePath clear-resources.json
+   End commands for one time initializations using Azure CLI with PowerShell
+
+
+   https://docs.microsoft.com/en-us/powershell/module/azuread/new-azureaduser?view=azureadps-2.0
+   emacs 4
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   #$Secure_String_Pwd = ConvertTo-SecureString "P@ssW0rD!" -AsPlainText -Force
+   #New-AzADUser -DisplayName "userAADAccessAzureSQLBlazorSvr" -Password $Secure_String_Pwd -UserPrincipalName "AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com" -AccountEnabled $true -MailNickName "userAADAccessAzureSQLBlazorSvr"
+   az.cmd identity create --name umid-cosmosid --resource-group $rg --location $loc 
+   $azureaduser=(az.cmd ad user list --filter "userPrincipalName eq 'AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com'"  --query [].objectId --output tsv)
+   write-output "azureaduser=$azureaduser"
+   $azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
+   write-output "azureadSignedInUser=$azureadSignedInUser"
+   az.cmd deployment group create --name $name --resource-group $rg   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
+   az.cmd sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
    End commands for one time initializations using Azure CLI with PowerShell
 
  */
@@ -110,7 +125,7 @@ resource website 'Microsoft.Web/sites@2020-12-01' = {
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/sourcecontrols?tabs=bicep 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sourcecontrols?tabs=bicep
-/*
+
   resource srcControls 'sourcecontrols@2021-03-01' = {
     name: 'web'
     properties: {
@@ -128,5 +143,5 @@ resource website 'Microsoft.Web/sites@2020-12-01' = {
       }      
     }
   }
-  */
+
 }
