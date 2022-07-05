@@ -44,13 +44,45 @@
    Begin commands for one time initializations using Azure CLI with PowerShell
    #$Secure_String_Pwd = ConvertTo-SecureString "P@ssW0rD!" -AsPlainText -Force
    #New-AzADUser -DisplayName "userAADAccessAzureSQLBlazorSvr" -Password $Secure_String_Pwd -UserPrincipalName "AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com" -AccountEnabled $true -MailNickName "userAADAccessAzureSQLBlazorSvr"
-   az.cmd identity create --name umid-cosmosid --resource-group $rg --location $loc 
+   az.cmd identity create --name umid-azuresqlid --resource-group $rg --location $loc 
    $azureaduser=(az.cmd ad user list --filter "userPrincipalName eq 'AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com'"  --query [].objectId --output tsv)
    write-output "azureaduser=$azureaduser"
    $azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
    write-output "azureadSignedInUser=$azureadSignedInUser"
    az.cmd deployment group create --name $name --resource-group $rg   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
    az.cmd sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
+   End commands for one time initializations using Azure CLI with PowerShell
+
+   emacs 5
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
+   End commands for one time initializations using Azure CLI with PowerShell
+
+   emacs 6
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   $username=(az webapp list --query "[].{name: name}" -g $rg | jq ".[] | .name")
+   write-output "create username=$username"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
+   write-output "add db_datareader"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
+   write-output "add db_datawriter"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
+   write-output "add db_ddladmin"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
+   End commands for one time initializations using Azure CLI with PowerShell
+
+   see https://github.com/Azure/sql-action
+
+   emacs 7
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "SELECT * FROM TEST"
+   End commands for one time initializations using Azure CLI with PowerShell
+
+   emacs 8
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance003')"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance004')"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "SELECT * FROM TEST"
    End commands for one time initializations using Azure CLI with PowerShell
 
  */

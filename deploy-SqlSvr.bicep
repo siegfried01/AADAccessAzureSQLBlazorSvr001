@@ -33,7 +33,7 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: 'rbac-demo-server'
   identity: {
     userAssignedIdentities: {
-      '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourcegroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.ManagedIdentity/userAssignedIdentities/umid-cosmosid': {}
+      '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourcegroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.ManagedIdentity/userAssignedIdentities/umid-azuresqlid': {}
     }
     type: 'UserAssigned'
   }
@@ -43,7 +43,7 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
-    primaryUserAssignedIdentityId: '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourcegroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.ManagedIdentity/userAssignedIdentities/umid-cosmosid'
+    primaryUserAssignedIdentityId: '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourcegroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.ManagedIdentity/userAssignedIdentities/umid-azuresqlid'
     administrators: {
       administratorType: 'ActiveDirectory'
       principalType: 'Application'

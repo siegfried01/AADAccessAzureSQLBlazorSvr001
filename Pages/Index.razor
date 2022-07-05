@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Microsoft.Data.SqlClient
 
 <PageTitle>Index</PageTitle>
 
@@ -9,6 +10,24 @@ Welcome to your new app deployed via github actions.
 Is the github action still broken?
 </p>
 @DateTime.Now.ToString("ddddd MMMM dd, yyyy hh:mm:ss.ff tt (zzz)")
+
+
+<h1>Results</h1>
+<table border="1">    
+    <tr><td><button @onclick="WriteToAzureSQLUsingManagedIdentity">read to Azure SQL using Managed Identity</button> </td><td><div style="border:double">@azureSQLStatusManagedIdentity</div></td></tr>
+</table>
+<table border="1">
+    @foreach (var r in azureSQLRows)
+    {
+        <tr>
+            <td>@r.id</td>
+            <td>@r.name</td>
+            <td>@r.dateTime</td>
+        </tr>
+    }
+</table>
+
+<h1>Errors from sourcecontrols</h1>
 <p> Why is sourcecontols getting </p>
 
 <code>
@@ -36,3 +55,68 @@ App Service Application URL: https://hqdqhengdtz4w-website.azurewebsites.net
 
 </pre>
 </code>
+
+@code{
+    string azureSQLStatusManagedIdentity = "normal";
+    class AzureSQLRows
+    {
+        public int id;
+        public string name;
+        public DateTime dateTime;
+    }
+    List<AzureSQLRows> azureSQLRows = new List<AzureSQLRows>();
+    async Task UpdateForResultsForAzureSQL(SqlConnection connection)
+    {
+        int rowCount = 0;
+        using (var query = new SqlCommand("SELECT COUNT(*) FROM TEST", connection))
+        {
+            using var reader = await query.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                rowCount = reader.GetInt32(0);
+            }
+        }
+        if (rowCount > 8)
+        {
+            using (var command = new SqlCommand("delete FROM test WHERE (id in (select top 1 id from test order by id))", connection))
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+        {
+            using (var query = new SqlCommand("SELECT * FROM TEST", connection))
+            {
+                using var reader = await query.ExecuteReaderAsync();
+                azureSQLRows = new List<AzureSQLRows>();
+                while (await reader.ReadAsync())
+                {
+                    var r = new AzureSQLRows();
+                    r.id = reader.GetInt32(0);
+                    r.name = reader.GetString(1);
+                    r.dateTime = reader.GetDateTime(2);
+                    azureSQLRows.Add(r);
+                }
+            }
+        }
+    }
+    async Task WriteToAzureSQLUsingManagedIdentity()
+    {
+        // https://www.techwatching.dev/posts/sqlclient-active-directory-authent
+        var now = DateTime.Now;
+        var nowString = now.ToString("yyyy MMMM dd HH:mm:ss.ffff (ddd)");
+        try
+        {
+            using var connection = new SqlConnection($"Server=tcp:rbac-demo-server.database.windows.net,1433;Authentication=Active Directory Default;Database=rbacdemoDatabase;");
+            await connection.OpenAsync(); // Login failed for user '<token-identified principal>'.
+            //SqlCommand command = new SqlCommand($"INSERT INTO [dbo].[test] ([name]) VALUES ('{value}')", connection);
+            //await command.ExecuteNonQueryAsync();
+            azureSQLStatusManagedIdentity = "Success " + nowString;
+            await UpdateForResultsForAzureSQL(connection);
+        }
+        catch (Exception ex)
+        {
+            azureSQLStatusManagedIdentity = $"Failure ({nowString}): {ex.Message}";
+        }
+    }
+
+}
