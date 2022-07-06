@@ -41,14 +41,16 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    -name: Create Create Azure SQL Database/Server
+      run: |
+        echo Create Azure SQL Database/Server
+        az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
     - uses: azure/sql-action@v1.3
       with:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
         sql-file: '${{ env.WORKING_DIRECTORY }}/sqlscripts/*.sql'
     - name: create Azure SQL and dump seed data
       run: |
-        echo Create Azure SQL Database/Server
-        az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
         echo Create AD admin for signed in user
         azureaduser=$(az.cmd ad signed-in-user show --query "objectId" -o tsv)
         az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
