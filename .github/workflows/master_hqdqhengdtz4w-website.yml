@@ -30,7 +30,7 @@ jobs:
           name='AADAccessAzureSQLBlazorSvr'
           rg="rg_$name"
           loc='westus2'
-          echo Create Azure SQL Database/Server
+          echo Create Azure SQL Database/Server password=${{ secrets.AZURE_AD_ADMIN_PASSWORD }}
           az deployment group create --name $name --resource-group $rg   --template-file deploy-SqlSvr.bicep --parameters azureSqlServerAdminPassword=${{ secrets.AZURE_AD_ADMIN_PASSWORD }} azureSqlServerAdminAccount=${{ secrets.AZURE_AD_ADMIN_PASSWORD }}
     - uses: azure/sql-action@v1.3
       with:
