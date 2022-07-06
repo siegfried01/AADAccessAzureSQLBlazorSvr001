@@ -20,7 +20,7 @@
 param azureSqlServerAdminAccount string= 'serverAdmin'
 
 @description('Azure Sql Server Admin Password')
-@secure()
+//@secure()
 param azureSqlServerAdminPassword string
 
 @description('Azure Sql Server location')
