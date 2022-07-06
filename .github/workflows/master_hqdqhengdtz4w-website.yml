@@ -46,5 +46,6 @@ jobs:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
         # optional for SQL scripts deployment - sql-file
         sql-file: './sqlscripts/*.sql'
+    - name: dump seed data
       run: sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -G -l 30 -Q "SELECT * FROM TEST"
             
