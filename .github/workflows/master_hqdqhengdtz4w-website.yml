@@ -42,28 +42,34 @@ jobs:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
     - name: Create Create Azure SQL Database/Server
-      run: |
-        echo Create Azure SQL Database/Server
-        az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          echo Create Azure SQL Database/Server
+          az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
     - uses: azure/sql-action@v1.3
       with:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
         sql-file: '${{ env.WORKING_DIRECTORY }}/sqlscripts/*.sql'
     - name: create AD admin
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          echo Create AD admin for signed in user
+          azureaduser=$(az.cmd ad signed-in-user show --query "objectId" -o tsv)
+          echo azureaduser=$azureaduser
+          az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
+          echo Create firewall rule
+          az.cmd sql server firewall-rule create -g rg_AADAccessAzureSQLBlazorSvr -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+          $azureaduser=(az.cmd ad user list --filter "userPrincipalName eq ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }}"  --query [].objectId --output tsv)
+          azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
+          echo "azureadSignedInUser=$azureadSignedInUser"
+          az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
+          az.cmd webapp identity assign --resource-group rg_AADAccessAzureSQLBlazorSvr --name hqdqhengdtz4w-website
+          website_username=$(az.cmd webapp list --query "[].{name: name}" -g rg_AADAccessAzureSQLBlazorSvr | jq ".[] | .name")
+          echo "create website_username=$website_username"
+    - name: use sqlcmd to create passwordless AAD access
       run: |
-        echo Create AD admin for signed in user
-        azureaduser=$(az.cmd ad signed-in-user show --query "objectId" -o tsv)
-        az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
-        echo Create firewall rule
-        az.cmd sql server firewall-rule create -g rg_AADAccessAzureSQLBlazorSvr -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
-        $azureaduser=(az.cmd ad user list --filter "userPrincipalName eq ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }}"  --query [].objectId --output tsv)
-        echo "azureaduser=$azureaduser"
-        azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
-        echo "azureadSignedInUser=$azureadSignedInUser"
-        az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
-        az.cmd webapp identity assign --resource-group rg_AADAccessAzureSQLBlazorSvr --name hqdqhengdtz4w-website
-        website_username=$(az.cmd webapp list --query "[].{name: name}" -g rg_AADAccessAzureSQLBlazorSvr | jq ".[] | .name")
-        echo "create website_username=$website_username"
         sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }}  -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
         echo "add db_datareader"
         sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }}  -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
