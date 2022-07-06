@@ -45,8 +45,9 @@ jobs:
       with:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
         sql-file: '${{ env.WORKING_DIRECTORY }}/sqlscripts/*.sql'
-    - name: create and dump seed data
+    - name: create Azure SQL and dump seed data
       run: |
+        az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
         echo Create AD admin for signed in user
         azureaduser=$(az.cmd ad signed-in-user show --query "objectId" -o tsv)
         az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
@@ -56,7 +57,6 @@ jobs:
         echo "azureaduser=$azureaduser"
         azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
         echo "azureadSignedInUser=$azureadSignedInUser"
-        az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
         az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
         az.cmd webapp identity assign --resource-group rg_AADAccessAzureSQLBlazorSvr --name hqdqhengdtz4w-website
         website_username=$(az.cmd webapp list --query "[].{name: name}" -g rg_AADAccessAzureSQLBlazorSvr | jq ".[] | .name")
