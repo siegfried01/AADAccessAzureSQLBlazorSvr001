@@ -22,28 +22,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-    - name: Build
-      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Test
-      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
-    - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
-    - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.hqdqhengdtz4w_website_FFFF }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-    - name: Publish Artifacts
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
     - name: Create Create Azure SQL Database/Server
       uses: azure/CLI@v1
       with:
+        azcliversion: 2.30.0
         inlineScript: |
           echo Create Azure SQL Database/Server
           az.cmd deployment group create --name $name --resource-group rg_AADAccessAzureSQLBlazorSvr   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
@@ -54,6 +36,7 @@ jobs:
     - name: create AD admin
       uses: azure/CLI@v1
       with:
+        azcliversion: 2.30.0
         inlineScript: |
           echo Create AD admin for signed in user
           azureaduser=$(az.cmd ad signed-in-user show --query "objectId" -o tsv)
