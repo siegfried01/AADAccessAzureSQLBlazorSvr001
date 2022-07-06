@@ -31,7 +31,7 @@ jobs:
           rg="rg_$name"
           loc='westus2'
           echo Create Azure SQL Database/Server
-          az deployment group create --name $name --resource-group $rg   --template-file deploy-SqlSvr.bicep --parameters  '{ \"parameters\": { \"azureSqlServerAdminPassword\": { \"reference\": { \"keyVault\": { \"id\": \"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\" }, \"secretName\": \"azureSqlServerAdminPassword\" } } } }'
+          az deployment group create --name $name --resource-group $rg   --template-file deploy-SqlSvr.bicep --parameters  '{ \\"parameters\\": { \\"azureSqlServerAdminPassword\\": { \\"reference\\": { \\"keyVault\\": { \\"id\\": \\"/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001\\" }, \\"secretName\\": \\"azureSqlServerAdminPassword\\" } } } }'
     - uses: azure/sql-action@v1.3
       with:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
