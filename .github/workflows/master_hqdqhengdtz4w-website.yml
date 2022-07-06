@@ -44,10 +44,11 @@ jobs:
     - uses: azure/sql-action@v1.3
       with:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        sql-file: './sqlscripts/*.sql'
     - name: create and dump seed data
       run: |
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "CREATE TABLE test (id INT IDENTITY(1,1) PRIMARY KEY, name VARCHAR(255), created DATETIME DEFAULT GETDATE())"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "INSERT INTO TEST (name) VALUES ('Debbie')"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "INSERT INTO TEST (name) VALUES ('Mike')"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "SELECT * FROM TEST"
+        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "CREATE TABLE TEST002 (id INT IDENTITY(1,1) PRIMARY KEY, name VARCHAR(255), created DATETIME DEFAULT GETDATE())"
+        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "INSERT INTO TEST002 (name) VALUES ('Debbie')"
+        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "INSERT INTO TEST002 (name) VALUES ('Mike')"
+        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_SQL_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} -l 30 -Q "SELECT * FROM TEST002"
             
