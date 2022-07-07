@@ -35,6 +35,17 @@ jobs:
           echo deploymenet complete
           echo create firewall to allow all azure services
           az sql server firewall-rule create -g $rg -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+          echo Create AD admin for signed in user
+          azureaduser=$(az ad signed-in-user show --query "objectId" -o tsv)
+          echo azureaduser=$azureaduser
+          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
+          azureaduser=$(az ad user list --filter "userPrincipalName eq ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }}"  --query [].objectId --output tsv)
+          azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
+          echo "azureadSignedInUser=$azureadSignedInUser"
+          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
+          az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
+          website_username=$(az webapp list --query "[].{name: name}" -g $rg | jq ".[] | .name")
+          echo "create website_username=$website_username"
     - uses: azure/sql-action@v1.3
       with:
         connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
@@ -47,19 +58,6 @@ jobs:
           name='AADAccessAzureSQLBlazorSvr'
           rg="rg_$name"
           loc='westus2'
-          echo Create AD admin for signed in user
-          azureaduser=$(az ad signed-in-user show --query "objectId" -o tsv)
-          echo azureaduser=$azureaduser
-          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
-          echo Create firewall rule
-          az sql server firewall-rule create -g rg_AADAccessAzureSQLBlazorSvr -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
-          azureaduser=$(az ad user list --filter "userPrincipalName eq ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }}"  --query [].objectId --output tsv)
-          azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
-          echo "azureadSignedInUser=$azureadSignedInUser"
-          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
-          az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
-          website_username=$(az webapp list --query "[].{name: name}" -g rg_AADAccessAzureSQLBlazorSvr | jq ".[] | .name")
-          echo "create website_username=$website_username"
     - name: use sqlcmd to create passwordless AAD access
       run: |
         echo "create website_username=$website_username"
