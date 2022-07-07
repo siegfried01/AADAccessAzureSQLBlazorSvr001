@@ -23,7 +23,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: deploy
+    - name: deploy Azure SQL Server/Database
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
@@ -31,7 +31,7 @@ jobs:
         template: ./deploy-SqlSvr.bicep
         parameters: azureSqlServerAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
         failOnStdErr: false        
-    - name: Create Create Azure SQL Database/Server
+    - name: Create Azure SQL ADMIN from AD user
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
@@ -49,18 +49,11 @@ jobs:
           echo Fetch Website name
           website_username=$(az webapp list --query "[].{name: name}" -g $rg | jq ".[] | .name")
           echo "created website_username=$website_username"
-    - uses: azure/sql-action@v1.3
+    - name: Run SQL Scripts to populate database
+      uses: azure/sql-action@v1.3
       with:
-        connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        connection-string: Server=tcp:rbac-demo-server.database.windows.net,1433;Initial Catalog=rbacdemoDatabase;Persist Security Info=False;User ID=serverAdmin;Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
         sql-file: '${{ env.WORKING_DIRECTORY }}/sqlscripts/*.sql'
-    - name: create AD admin
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.30.0
-        inlineScript: |
-          name='AADAccessAzureSQLBlazorSvr'
-          rg="rg_$name"
-          loc='westus2'
     - name: use sqlcmd to create passwordless AAD access
       run: |
         echo "create website_username=$website_username"
