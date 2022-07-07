@@ -31,19 +31,12 @@ param sqlsvrLocation string = 'West US3'
 @description('Generated from /subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.Sql/servers/rbac-demo-server')
 resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: 'rbac-demo-server'
-  identity: {
-    userAssignedIdentities: {
-      '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourcegroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.ManagedIdentity/userAssignedIdentities/umid-azuresqlid': {}
-    }
-    type: 'UserAssigned'
-  }
   properties: {
     administratorLogin: azureSqlServerAdminAccount
     administratorLoginPassword:  azureSqlServerAdminPassword
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
-    primaryUserAssignedIdentityId: '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourcegroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.ManagedIdentity/userAssignedIdentities/umid-azuresqlid'
     administrators: {
       administratorType: 'ActiveDirectory'
       principalType: 'Application'
