@@ -25,7 +25,6 @@ jobs:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         resourceGroupName: ${{ env.RG }}
         template: ./deploy-AADAccessAzureSQLBlazorSvr.bicep
-        parameters: azureSqlServerAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
         failOnStdErr: false        
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
