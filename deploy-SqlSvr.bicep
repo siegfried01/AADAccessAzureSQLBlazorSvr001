@@ -9,7 +9,7 @@
  * echo Create AD admin for signed in user
  * $azureaduser=$(az ad signed-in-user show --query "objectId" -o tsv)
  * az.cmd sql server ad-admin create --resource-group rg_AADAccessAzureSQLBlazorSvr --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
- * Create firewall rule
+ * echo Create firewall rule
  * az.cmd sql server firewall-rule create -g rg_AADAccessAzureSQLBlazorSvr -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
  * Get-AzResource -ResourceGroupName $rg | ft
  * End commands to execute this file using Azure CLI with Powershell
