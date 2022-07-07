@@ -128,12 +128,6 @@ resource website 'Microsoft.Web/sites@2020-12-01' = {
       linuxFxVersion: 'DOTNETCORE|6.0'
       webSocketsEnabled: true
       netFrameworkVersion: 'v6.0'
-      metadata:[
-         {
-            name: 'CURRENT_STACK'
-            value: 'dotnet'
-         }
-      ]
     }
   }
   resource logs 'config' = {
