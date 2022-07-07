@@ -14,9 +14,9 @@ Is the github action still broken?
 
 <h1>Results</h1>
 <table border="1">    
-    <tr><td><button @onclick="WriteToAzureSQLUsingManagedIdentity">read to Azure SQL using Managed Identity</button> </td><td><div style="border:double">@azureSQLStatusManagedIdentity</div></td></tr>
+    <tr><td><button @onclick="ReadFromAzureSQLUsingManagedIdentity">read to Azure SQL using Managed Identity</button> </td><td><div style="border:double">@azureSQLStatusManagedIdentity</div></td></tr>
 </table>
-<table border="1">
+<table style="border:double black">
     @foreach (var r in azureSQLRows)
     {
         <tr>
@@ -26,35 +26,6 @@ Is the github action still broken?
         </tr>
     }
 </table>
-
-<h1>Errors from sourcecontrols</h1>
-<p> Why is sourcecontols getting </p>
-
-<code>
-<pre>
-    Run azure/webapps-deploy@v2
-  with:
-    app-name: hqdqhengdtz4w-website
-    publish-profile: ***
-    package: ./published
-    slot-name: production
-  env:
-    AZURE_WEBAPP_NAME: hqdqhengdtz4w-website
-    AZURE_WEBAPP_PACKAGE_PATH: ./published
-    CONFIGURATION: Release
-    DOTNET_CORE_VERSION: 6.0.x
-    WORKING_DIRECTORY: .
-    AZURE_HTTP_USER_AGENT: 
-    AZUREPS_HOST_ENVIRONMENT: 
-    DOTNET_ROOT: /home/runner/.dotnet
-Package deployment using ZIP Deploy initiated.
-Error: Failed to deploy web package to App Service.
-Error: Deployment Failed with Error: Error: Failed to deploy web package to App Service.
-Unauthorized (CODE: 401)
-App Service Application URL: https://hqdqhengdtz4w-website.azurewebsites.net
-
-</pre>
-</code>
 
 @code{
     string azureSQLStatusManagedIdentity = "normal";
@@ -99,7 +70,7 @@ App Service Application URL: https://hqdqhengdtz4w-website.azurewebsites.net
             }
         }
     }
-    async Task WriteToAzureSQLUsingManagedIdentity()
+    async Task ReadFromAzureSQLUsingManagedIdentity()
     {
         // https://www.techwatching.dev/posts/sqlclient-active-directory-authent
         var now = DateTime.Now;
