@@ -43,7 +43,7 @@ jobs:
           echo create firewall to allow all azure services
           az sql server firewall-rule create -g $rg -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
           echo Create AD admin for signed in user
-          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id ${{ secret.AZURE_AD_ADMIN_OBJECT_ID }}
+          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id ${{ secrets.AZURE_AD_ADMIN_OBJECT_ID }}
           echo Assign Identity to web site
           az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
           echo Fetch Website name
