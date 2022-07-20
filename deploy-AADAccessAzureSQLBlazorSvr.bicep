@@ -62,27 +62,38 @@
    Begin commands for one time initializations using Azure CLI with PowerShell
    $username=(az webapp list --query "[].{name: name}" -g $rg | jq ".[] | .name")
    write-output "create username=$username"
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
    write-output "add db_datareader"
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
    write-output "add db_datawriter"
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
    write-output "add db_ddladmin"
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
    End commands for one time initializations using Azure CLI with PowerShell
 
    see https://github.com/Azure/sql-action
 
    emacs 7
    Begin commands for one time initializations using Azure CLI with PowerShell
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "SELECT * FROM TEST"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "SELECT * FROM TEST"
    End commands for one time initializations using Azure CLI with PowerShell
 
    emacs 8
    Begin commands for one time initializations using Azure CLI with PowerShell
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance003')"
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance004')"
-   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P P@ssW0rD! -G -l 30 -Q "SELECT * FROM TEST"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance003')"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance004')"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "SELECT * FROM TEST"
+   End commands for one time initializations using Azure CLI with PowerShell
+
+   emacs 9
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "CREATE USER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com] FROM EXTERNAL PROVIDER;"
+   write-output "add db_datareader"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com];"
+   write-output "add db_datawriter"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com];"
+   write-output "add db_ddladmin"
+   sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com];"
    End commands for one time initializations using Azure CLI with PowerShell
 
  */

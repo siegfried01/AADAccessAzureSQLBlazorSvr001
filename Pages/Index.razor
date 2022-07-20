@@ -5,16 +5,23 @@
 
 <h1>Hello, Azure SQL From BlazorServer</h1>
 
-Welcome to your new app deployed via github actions.
-<p>
-Is the github action still broken?
-</p>
-@DateTime.Now.ToString("ddddd MMMM dd, yyyy hh:mm:ss.ff tt (zzz)")
+Welcome to your new app deployed via github actions. Date: @DateTime.Now.ToString("ddddd MMMM dd, yyyy hh:mm:ss.ff tt (zzz)")
 
 
 <h1>Results</h1>
 <table border="1">    
-    <tr><td><button @onclick="ReadFromAzureSQLUsingManagedIdentity">read to Azure SQL using Managed Identity</button> </td><td><div style="border:double">@azureSQLStatusManagedIdentity</div></td></tr>
+    <tr><td><button @onclick="WriteReadeadAzureSQLUsingManagedIdentity">read/write to Azure SQL using Managed Identity</button> </td>
+        <td>
+        <table>
+            <tr><td><label>Name: <input @bind="name"/></label></td> </tr>
+            <tr><td><label>Query: <input @bind="query"/> </label></td>  </tr>
+        </table>
+        </td>
+        <td>@executionTime</td>
+        <td><div style="border:double">@azureWriteSQLStatusManagedIdentity</div>
+            <div style="border:double">@azureReadSQLStatusManagedIdentity</div>
+        </td>
+    </tr>
 </table>
 <table style="border:double black">
     @foreach (var r in azureSQLRows)
@@ -28,7 +35,11 @@ Is the github action still broken?
 </table>
 
 @code{
-    string azureSQLStatusManagedIdentity = "normal";
+        string azureReadSQLStatusManagedIdentity = "normal";
+        string azureWriteSQLStatusManagedIdentity = "normal";
+        string executionTime = "";
+        string name = "";
+        string query = "SELECT * FROM TEST";
     class AzureSQLRows
     {
         public int id;
@@ -36,41 +47,51 @@ Is the github action still broken?
         public DateTime dateTime;
     }
     List<AzureSQLRows> azureSQLRows = new List<AzureSQLRows>();
-    async Task UpdateForResultsForAzureSQL(SqlConnection connection)
+    async Task UpdateForResultsForAzureSQL(DateTime now, string nowString, SqlConnection connection)
     {
-        int rowCount = 0;
-        using (var query = new SqlCommand("SELECT COUNT(*) FROM TEST", connection))
+        try
         {
-            using var reader = await query.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                rowCount = reader.GetInt32(0);
-            }
-        }
-        if (rowCount > 8)
-        {
-            using (var command = new SqlCommand("delete FROM test WHERE (id in (select top 1 id from test order by id))", connection))
-            {
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-        {
-            using (var query = new SqlCommand("SELECT * FROM TEST", connection))
+            int rowCount = 0;
+            azureReadSQLStatusManagedIdentity = "Success " + nowString;
+            using (var query = new SqlCommand("SELECT COUNT(*) FROM TEST", connection))
             {
                 using var reader = await query.ExecuteReaderAsync();
-                azureSQLRows = new List<AzureSQLRows>();
                 while (await reader.ReadAsync())
                 {
-                    var r = new AzureSQLRows();
-                    r.id = reader.GetInt32(0);
-                    r.name = reader.GetString(1);
-                    r.dateTime = reader.GetDateTime(2);
-                    azureSQLRows.Add(r);
+                    rowCount = reader.GetInt32(0);
+                }
+            }
+            if (rowCount > 8)
+            {
+                using (var command = new SqlCommand("delete FROM test WHERE (id in (select top 1 id from test order by id))", connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+            {
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    azureSQLRows = new List<AzureSQLRows>();
+                    while (await reader.ReadAsync())
+                    {
+                        var r = new AzureSQLRows();
+                        r.id = reader.GetInt32(0);
+                        r.name = reader.GetString(1);
+                        r.dateTime = reader.GetDateTime(2);
+                        azureSQLRows.Add(r);
+                    }
                 }
             }
         }
+        catch (Exception ex)
+        {
+            azureReadSQLStatusManagedIdentity = $"Failure ({nowString}): {ex.Message}";
+            executionTime = "" + (DateTime.Now - now).TotalMilliseconds + " ms";
+
+        }
     }
-    async Task ReadFromAzureSQLUsingManagedIdentity()
+    async Task WriteReadeadAzureSQLUsingManagedIdentity()
     {
         // https://www.techwatching.dev/posts/sqlclient-active-directory-authent
         var now = DateTime.Now;
@@ -78,15 +99,27 @@ Is the github action still broken?
         try
         {
             using var connection = new SqlConnection($"Server=tcp:rbac-demo-server.database.windows.net,1433;Authentication=Active Directory Default;Database=rbacdemoDatabase;");
-            await connection.OpenAsync(); // Login failed for user '<token-identified principal>'.
-            //SqlCommand command = new SqlCommand($"INSERT INTO [dbo].[test] ([name]) VALUES ('{value}')", connection);
-            //await command.ExecuteNonQueryAsync();
-            azureSQLStatusManagedIdentity = "Success " + nowString;
-            await UpdateForResultsForAzureSQL(connection);
+            await connection.OpenAsync(); 
+            azureWriteSQLStatusManagedIdentity = "Success " + nowString;
+            using (var cmd = new SqlCommand($"INSERT INTO TEST ([name]) VALUES(@name)", connection))
+            {
+                cmd.Parameters.AddWithValue("@name", name);
+                var n = await cmd.ExecuteNonQueryAsync();
+            }
+            executionTime = "" + (DateTime.Now - now).TotalMilliseconds + " ms";
+            await UpdateForResultsForAzureSQL(now, nowString, connection);
         }
         catch (Exception ex)
         {
-            azureSQLStatusManagedIdentity = $"Failure ({nowString}): {ex.Message}";
+            azureWriteSQLStatusManagedIdentity = $"Failure ({nowString}): {ex.Message}";
+            if (ex.InnerException is not null && !string.IsNullOrEmpty(ex.InnerException.Message))
+            {
+                azureWriteSQLStatusManagedIdentity += "\nInner Exception =" + ex.InnerException.Message;
+            }
+            // Works when running from app service!
+            // When running from desktop computer:
+            //Failure(2022 July 08 04:28:32.3194(Fri)): SharedTokenCacheCredential authentication failed: Persistence check failed.Inspect inner exception for details Inner Exception = SharedTokenCacheCredential authentication failed: Persistence check failed.Inspect inner exception for details
+            executionTime = "" + (DateTime.Now - now).TotalMilliseconds + " ms";
         }
     }
 

@@ -48,14 +48,14 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}      
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
     - name: deploy Azure SQL Server/Database
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         resourceGroupName: ${{ env.RG }}
         template: ./deploy-SqlSvr.bicep
-        parameters: azureSqlServerAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
+        parameters: '@deploy-SqlSvr-parameters.json'
         failOnStdErr: false        
     - name: Create Azure SQL ADMIN from AD user
       uses: azure/CLI@v1
