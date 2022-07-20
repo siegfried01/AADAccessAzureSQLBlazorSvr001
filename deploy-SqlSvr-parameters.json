@@ -5,7 +5,7 @@
     "azureSqlServerAdminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/aksbicep02/providers/Microsoft.KeyVault/vaults/aksbicep02SH0001"
+          "id": "/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.KeyVault/vaults/kv-AADAccessAzureSQL"
         },
         "secretName": "azureSqlServerAdminPassword"
       }
