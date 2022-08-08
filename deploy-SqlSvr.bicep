@@ -63,7 +63,7 @@ resource kv 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
       }
       {
         tenantId: subscription().tenantId
-        objectId: githubScriptRunnerId
+        objectId: githubScriptRunnerObjectId
         permissions: {
           // Secrets are referenced by and enumerated in App Configuration so 'list' is not necessary.
           secrets: [
