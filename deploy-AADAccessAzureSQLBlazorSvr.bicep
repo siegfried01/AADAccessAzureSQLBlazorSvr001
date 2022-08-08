@@ -7,7 +7,7 @@
    write-output "End common prolog loc=$loc rg=$rg"
    End common prolog commands
 
-   emacs 1
+   emacs F10
    Begin commands to deploy this file using Azure CLI with PowerShell
    echo WaitForBuildComplete
    WaitForBuildComplete
@@ -16,7 +16,7 @@
    write-output "end deploy"
    End commands to deploy this file using Azure CLI with PowerShell
 
-   emacs 2
+   emacs ESC 2 F10
    Begin commands to shut down this deployment using Azure CLI with PowerShell
    echo CreateBuildEvent.exe
    CreateBuildEvent.exe&
@@ -27,7 +27,7 @@
    write-output "showdown is complete"
    End commands to shut down this deployment using Azure CLI with PowerShell
 
-   emacs 3
+   emacs ESC 3 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    az.cmd group create -l $loc -n $rg
    $id=(az.cmd group show --name $rg --query 'id' --output tsv)
@@ -40,7 +40,7 @@
 
 
    https://docs.microsoft.com/en-us/powershell/module/azuread/new-azureaduser?view=azureadps-2.0
-   emacs 4
+   emacs ESC 4 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    #$Secure_String_Pwd = ConvertTo-SecureString "P@ssW0rD!" -AsPlainText -Force
    #New-AzADUser -DisplayName "userAADAccessAzureSQLBlazorSvr" -Password $Secure_String_Pwd -UserPrincipalName "AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com" -AccountEnabled $true -MailNickName "userAADAccessAzureSQLBlazorSvr"
@@ -53,12 +53,12 @@
    az.cmd sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id $azureaduser
    End commands for one time initializations using Azure CLI with PowerShell
 
-   emacs 5
+   emacs ESC 5 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
    End commands for one time initializations using Azure CLI with PowerShell
 
-   emacs 6
+   emacs ESC 6 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    $username=(az webapp list --query "[].{name: name}" -g $rg | jq ".[] | .name")
    write-output "create username=$username"
@@ -73,19 +73,19 @@
 
    see https://github.com/Azure/sql-action
 
-   emacs 7
+   emacs ESC 7 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "SELECT * FROM TEST"
    End commands for one time initializations using Azure CLI with PowerShell
 
-   emacs 8
+   emacs ESC 8 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance003')"
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "INSERT INTO TEST ([name]) VALUES('constance004')"
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "SELECT * FROM TEST"
    End commands for one time initializations using Azure CLI with PowerShell
 
-   emacs 9
+   emacs ESC 9 F10
    Begin commands for one time initializations using Azure CLI with PowerShell
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "CREATE USER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com] FROM EXTERNAL PROVIDER;"
    write-output "add db_datareader"
@@ -94,6 +94,12 @@
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com];"
    write-output "add db_ddladmin"
    sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com -P $env:AADACCESSAZURESQLBLAZORSVR_PASSWORD -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [sheintze_hotmail.com#EXT#@sheintzehotmail.onmicrosoft.com];"
+   End commands for one time initializations using Azure CLI with PowerShell
+
+   emacs ESC 10 F10
+   Begin commands for one time initializations using Azure CLI with PowerShell
+   $id=(az.cmd group show --name $rg --query 'id' --output tsv)
+   write-output "id=$id"
    End commands for one time initializations using Azure CLI with PowerShell
 
  */

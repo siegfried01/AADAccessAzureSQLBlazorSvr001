@@ -16,17 +16,68 @@
  */
 
 @description('Azure Sql Server Admin Account')
-//@secure()
-param azureSqlServerAdminAccount string= 'serverAdmin'
+@secure()
+param azureSqlServerAdminAccount string
 
 @description('Azure Sql Server Admin Password')
-//@secure()
+@secure()
 param azureSqlServerAdminPassword string
 
 @description('Azure Sql Server location')
 param sqlsvrLocation string = 'West US3'
 
+param location string = resourceGroup().location
+
+@description('Service Principal of owner (me)')
+param ownerId string
+
+@description('Service Principal of Github script runner')
+param githubScriptRunnerId string
+
 //"code": "ParentResourceNotFound","message": "Can not perform requested operation on nested resource. Parent resource 'rbac-demo-server' not found."
+
+@description('The base name for resources')
+param name string = uniqueString(resourceGroup().id)
+
+
+resource kv 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
+  name: '${name}-kv'
+  location: location
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: subscription().tenantId
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: ownerId
+        permissions:{
+          secrets:[
+            'all'
+          ]
+        }
+      }
+      {
+        tenantId: subscription().tenantId
+        objectId: githubScriptRunnerId
+        permissions: {
+          // Secrets are referenced by and enumerated in App Configuration so 'list' is not necessary.
+          secrets: [
+            'get'
+          ]
+        }
+      }
+    ]
+  }
+  resource sekret 'secrets@2019-09-01' = {
+    name: 'azureSqlServerAdminPassword'
+    properties: {
+      value: azureSqlServerAdminPassword
+    }
+  }
+}
 
 @description('Generated from /subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.Sql/servers/rbac-demo-server')
 resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {

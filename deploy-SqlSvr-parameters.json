@@ -10,5 +10,13 @@
         "secretName": "azureSqlServerAdminPassword"
       }
     }
+    "azureSqlServerAdminAccount": {
+      "reference": {
+        "keyVault": {
+            "id": "/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLPerm/providers/Microsoft.KeyVault/vaults/kv-AADAccessAzureSQLPerm"
+        },
+        "secretName": "azureSqlServerAdminAccount"
+      }
+    }
   } 
 }
