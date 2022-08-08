@@ -26,6 +26,7 @@ param azureSqlServerAdminPassword string
 @description('Azure Sql Server location')
 param sqlsvrLocation string = 'West US3'
 
+/*
 param location string = resourceGroup().location
 
 @description('Service Principal of owner (me)')
@@ -35,8 +36,7 @@ param ownerId string
 @description('Service Principal of Github script runner')
 @secure()
 param githubScriptRunnerObjectId string
-
-//"code": "ParentResourceNotFound","message": "Can not perform requested operation on nested resource. Parent resource 'rbac-demo-server' not found."
+*/
 
 @description('The base name for resources')
 param name string = uniqueString(resourceGroup().id)
@@ -83,7 +83,7 @@ resource kv 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
 
 @description('Generated from /subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.Sql/servers/rbac-demo-server')
 resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
-  name: 'rbac-demo-server'
+  name: '${name}-rbacdemoserver'
   properties: {
     administratorLogin: azureSqlServerAdminAccount
     administratorLoginPassword:  azureSqlServerAdminPassword
@@ -104,7 +104,7 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
   tags: {}  
 
   resource rbacdemoDatabase 'databases@2021-11-01-preview' = {
-    name: 'rbacdemoDatabase'  
+    name: '${name}-rbacdemoDatabase'  
     sku: {
       name: 'GP_S_Gen5'
       tier: 'GeneralPurpose'
