@@ -29,10 +29,12 @@ param sqlsvrLocation string = 'West US3'
 param location string = resourceGroup().location
 
 @description('Service Principal of owner (me)')
+@secure()
 param ownerId string
 
 @description('Service Principal of Github script runner')
-param githubScriptRunnerId string
+@secure()
+param githubScriptRunnerObjectId string
 
 //"code": "ParentResourceNotFound","message": "Can not perform requested operation on nested resource. Parent resource 'rbac-demo-server' not found."
 
