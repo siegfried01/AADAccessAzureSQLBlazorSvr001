@@ -9,7 +9,7 @@
         },
         "secretName": "azureSqlServerAdminPassword"
       }
-    }
+    },
     "azureSqlServerAdminAccount": {
       "reference": {
         "keyVault": {
