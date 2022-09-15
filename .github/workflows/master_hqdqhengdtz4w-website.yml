@@ -83,12 +83,12 @@ jobs:
     - name: use sqlcmd to create passwordless AAD access
       run: |
         echo "create website_username=$website_username"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
         echo "add db_datareader"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
         echo "add db_datawriter"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
         echo "add db_ddladmin"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
 
             
