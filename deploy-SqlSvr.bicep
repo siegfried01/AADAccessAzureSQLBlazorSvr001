@@ -68,7 +68,6 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
       autoPauseDelay: 60
       requestedBackupStorageRedundancy: 'Local'
       minCapacity: 1
-      maintenanceConfigurationId: '/subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default'
       isLedgerOn: false
     }
     location: sqlsvrLocation
