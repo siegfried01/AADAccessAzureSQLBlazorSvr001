@@ -67,9 +67,9 @@ jobs:
           loc='westus2'
           echo deploymenet complete
           echo create firewall to allow all azure services
-          az sql server firewall-rule create -g $rg -s rbac-demo-server -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+          az sql server firewall-rule create -g $rg -s hqdqhengdtz4w-rbacdemoserver -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
           echo Create AD admin for signed in user
-          az sql server ad-admin create --resource-group $rg --server-name rbac-demo-server --display-name ADMIN --object-id ${{ secrets.AZURE_AD_ADMIN_OBJECT_ID }}
+          az sql server ad-admin create --resource-group $rg --server-name hqdqhengdtz4w-rbacdemoserver --display-name ADMIN --object-id ${{ secrets.AZURE_AD_ADMIN_OBJECT_ID }}
           echo Assign Identity to web site
           az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
           echo Fetch Website name
@@ -78,17 +78,17 @@ jobs:
     - name: Run SQL Scripts to populate database
       uses: azure/sql-action@v1.3
       with:
-        connection-string: Server=tcp:rbac-demo-server.database.windows.net,1433;Initial Catalog=rbacdemoDatabase;Persist Security Info=False;User ID=serverAdmin;Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+        connection-string: Server=tcp:hqdqhengdtz4w-rbacdemoserver.database.windows.net,1433;Initial Catalog=rbacdemoDatabase;Persist Security Info=False;User ID=serverAdmin;Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
         sql-file: '${{ env.WORKING_DIRECTORY }}/sqlscripts/*.sql'
     - name: use sqlcmd to create passwordless AAD access
       run: |
         echo "create website_username=$website_username"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "CREATE USER [hqdqhengdtz4w-website] FROM EXTERNAL PROVIDER;"
         echo "add db_datareader"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datareader ADD MEMBER [hqdqhengdtz4w-website];"
         echo "add db_datawriter"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_datawriter ADD MEMBER [hqdqhengdtz4w-website];"
         echo "add db_ddladmin"
-        sqlcmd -S rbac-demo-server.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
+        sqlcmd -S hqdqhengdtz4w-rbacdemoserver.database.windows.net -d rbacdemoDatabase -U ${{ secrets.AZURE_AD_ADMIN_ACCOUNT }} -P ${{ secrets.AZURE_AD_ADMIN_PASSWORD }} -G -l 30 -Q "ALTER ROLE db_ddladmin  ADD MEMBER [hqdqhengdtz4w-website];"
 
             
