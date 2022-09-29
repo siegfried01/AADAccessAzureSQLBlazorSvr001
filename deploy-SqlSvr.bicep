@@ -23,10 +23,10 @@ param azureSqlServerAdminAccount string
 @secure()
 param azureSqlServerAdminPassword string
 
-param location string = resourceGroup().location
+//param location string = resourceGroup().location
 
 @description('Azure Sql Server location')
-param sqlsvrLocation string = location//'West US3'
+param sqlsvrLocation string = 'West US3'
 
 @description('The base name for resources')
 param name string = uniqueString(resourceGroup().id)
