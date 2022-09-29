@@ -45,7 +45,7 @@
    #$Secure_String_Pwd = ConvertTo-SecureString "P@ssW0rD!" -AsPlainText -Force
    #New-AzADUser -DisplayName "userAADAccessAzureSQLBlazorSvr" -Password $Secure_String_Pwd -UserPrincipalName "AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com" -AccountEnabled $true -MailNickName "userAADAccessAzureSQLBlazorSvr"
    az.cmd identity create --name umid-azuresqlid --resource-group $rg --location $loc 
-   $azureaduser=(az.cmd ad user list --filter "userPrincipalName eq 'AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com'"  --query [].objectId --output tsv)
+   $azureaduser=(az ad user list --filter "userPrincipalName eq 'AADAccessAzureSQLBlazorSvr@sheintzehotmail.onmicrosoft.com'"  --query [].objectId --output tsv)
    write-output "azureaduser=$azureaduser"
    $azureadSignedInUser=$(az ad signed-in-user show --query "objectId" -o tsv)
    write-output "azureadSignedInUser=$azureadSignedInUser"

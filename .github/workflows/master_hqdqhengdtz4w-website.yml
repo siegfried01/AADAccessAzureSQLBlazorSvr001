@@ -19,7 +19,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}    
     - uses: actions/checkout@v2
-    - name: deploy Plan and Web Site
+    - name: deploy Web Server Farm Plan and Web Site
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
@@ -55,7 +55,8 @@ jobs:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         resourceGroupName: ${{ env.RG }}
         template: ./deploy-SqlSvr.bicep
-        parameters: '@deploy-SqlSvr-parameters.json'
+        parameters: azureSqlServerAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
+        #parameters: '@deploy-SqlSvr-parameters.json'
         failOnStdErr: false        
     - name: Create Azure SQL ADMIN from AD user
       uses: azure/CLI@v1
@@ -75,7 +76,7 @@ jobs:
           echo Fetch Website name
           website_username=$(az webapp list --query "[].{name: name}" -g $rg | jq ".[] | .name")
           echo "created website_username=$website_username"
-    - name: Run SQL Scripts to populate database
+    - name: Run SQL Scripts to configure database access
       uses: azure/sql-action@v1.3
       with:
         connection-string: Server=tcp:hqdqhengdtz4w-rbacdemoserver.database.windows.net,1433;Initial Catalog=rbacdemoDatabase;Persist Security Info=False;User ID=serverAdmin;Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
