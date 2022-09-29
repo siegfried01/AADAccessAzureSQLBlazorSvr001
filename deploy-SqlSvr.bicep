@@ -53,6 +53,7 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
   }
   location: sqlsvrLocation
   tags: {}  
+  /*
   resource administrators 'administrators@2022-02-01-preview'={
     name:'ActiveDirectory'
     properties:{
@@ -62,7 +63,7 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
       tenantId: '7a838aec-0b9e-4856-a3b5-2b02613f36a2'
     }
   }
-
+  */
   resource rbacdemoDatabase 'databases@2021-11-01-preview' = {
     name: '${name}-rbacdemoDatabase'  
     sku:{
