@@ -23,8 +23,10 @@ param azureSqlServerAdminAccount string
 @secure()
 param azureSqlServerAdminPassword string
 
+param location string = resourceGroup().location
+
 @description('Azure Sql Server location')
-param sqlsvrLocation string = 'West US3'
+param sqlsvrLocation string = location//'West US3'
 
 @description('The base name for resources')
 param name string = uniqueString(resourceGroup().id)
@@ -38,6 +40,7 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
+    /*
     administrators: {
       administratorType: 'ActiveDirectory'
       principalType: 'Application'
@@ -45,20 +48,30 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
       sid: '81bdf628-7fbd-48f5-a1ca-cd70e07e2d79'
       tenantId: '7a838aec-0b9e-4856-a3b5-2b02613f36a2'
       azureADOnlyAuthentication: false
-    }
+    }*/
     restrictOutboundNetworkAccess: 'Disabled'
   }
   location: sqlsvrLocation
   tags: {}  
+  resource administrators 'administrators@2022-02-01-preview'={
+    name:'ActiveDirectory'
+    properties:{
+      administratorType: 'ActiveDirectory'
+      login: 'AADAccessAzureSQLBlazorSvr'
+      sid: '81bdf628-7fbd-48f5-a1ca-cd70e07e2d79'
+      tenantId: '7a838aec-0b9e-4856-a3b5-2b02613f36a2'
+    }
+  }
 
   resource rbacdemoDatabase 'databases@2021-11-01-preview' = {
     name: '${name}-rbacdemoDatabase'  
-    sku: {
+    sku:{
       name: 'GP_S_Gen5'
-      tier: 'GeneralPurpose'
-      family: 'Gen5'
+      tier: 'Basic' //'GeneralPurpose'
+      family: 'Gen4'
       capacity: 1
-    }
+    }    
+
     properties: {
       collation: 'SQL_Latin1_General_CP1_CI_AS'
       maxSizeBytes: 1073741824
