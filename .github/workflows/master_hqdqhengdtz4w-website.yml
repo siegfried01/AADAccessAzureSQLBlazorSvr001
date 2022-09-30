@@ -68,9 +68,9 @@ jobs:
           loc='westus2'
           echo deploymenet complete
           echo create firewall to allow all azure services
-          az sql server firewall-rule create -g $rg -s hqdqhengdtz4w-rbacdemoserver -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+          az sql server firewall-rule create -g $rg -s rbacdemoserver -n AllAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
           echo Create AD admin for signed in user
-          az sql server ad-admin create --resource-group $rg --server-name hqdqhengdtz4w-rbacdemoserver --display-name ADMIN --object-id ${{ secrets.AZURE_AD_ADMIN_OBJECT_ID }}
+          az sql server ad-admin create --resource-group $rg --server-name rbacdemoserver --display-name ADMIN --object-id ${{ secrets.AZURE_AD_ADMIN_OBJECT_ID }}
           echo Assign Identity to web site
           az webapp identity assign --resource-group $rg --name hqdqhengdtz4w-website
           echo Fetch Website name
@@ -79,7 +79,7 @@ jobs:
     - name: Run SQL Scripts to configure database access
       uses: azure/sql-action@v1.3
       with:
-        connection-string: Server=tcp:hqdqhengdtz4w-rbacdemoserver.database.windows.net,1433;Initial Catalog=rbacdemoDatabase;Persist Security Info=False;User ID=serverAdmin;Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+        connection-string: Server=tcp:rbacdemoserver.database.windows.net,1433;Initial Catalog=rbacdemoDatabase;Persist Security Info=False;User ID=serverAdmin;Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
         sql-file: '${{ env.WORKING_DIRECTORY }}/sqlscripts/*.sql'
     - name: use sqlcmd to create passwordless AAD access
       run: |
