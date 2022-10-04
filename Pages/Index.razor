@@ -98,7 +98,7 @@ Welcome to your new app deployed via github actions. Date: @DateTime.Now.ToStrin
         var nowString = now.ToString("yyyy MMMM dd HH:mm:ss.ffff (ddd)");
         try
         {
-            using var connection = new SqlConnection($"Server=tcp:rbac-demo-server.database.windows.net,1433;Authentication=Active Directory Default;Database=rbacdemoDatabase;");
+            using var connection = new SqlConnection($"Server=tcp:rbacdemoserver.database.windows.net,1433;Authentication=Active Directory Default;Database=rbacdemoDatabase;");
             await connection.OpenAsync(); 
             azureWriteSQLStatusManagedIdentity = "Success " + nowString;
             using (var cmd = new SqlCommand($"INSERT INTO TEST ([name]) VALUES(@name)", connection))
