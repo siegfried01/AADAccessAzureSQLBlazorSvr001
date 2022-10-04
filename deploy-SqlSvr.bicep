@@ -33,7 +33,7 @@ param name string = uniqueString(resourceGroup().id)
 
 @description('Generated from /subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.Sql/servers/rbac-demo-server')
 resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
-  name: 'rbacdemoserver'
+  name: 'rbacdemoserver' // will camel case work here? this becomes part of the domain name
   properties: {
     administratorLogin: azureSqlServerAdminAccount
     administratorLoginPassword:  azureSqlServerAdminPassword
@@ -64,8 +64,8 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
     }
   }
   
-  resource rbacdemoDatabase 'databases@2021-11-01-preview' = {
-    name: '$rbacdemoDatabase'  
+  resource rbacDemoDatabase 'databases@2021-11-01-preview' = {
+    name: 'rbacDemoDatabase'  
     sku:{
       name: 'GP_S_Gen5'
       tier: 'GeneralPurpose'
