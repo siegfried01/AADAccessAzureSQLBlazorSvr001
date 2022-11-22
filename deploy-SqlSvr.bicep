@@ -69,8 +69,10 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
     resource rbacDemoDatabase 'databases@2021-11-01-preview' = {
         name: 'rbacDemoDatabase'
         sku: {
-            name: 'Basic'
-            tier: 'Basic'
+      name: 'GP_S_Gen5'
+      tier: 'GeneralPurpose'
+      family: 'Gen5'
+      capacity: 1
         }
 
         properties: {
