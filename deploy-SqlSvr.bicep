@@ -17,7 +17,7 @@
 
 @description('Azure Sql Server Admin Account')
 //@secure()
-param azureSqlServerAdminAccount string='serverAdmin'
+param azureSqlServerAdminAccount string = 'serverAdmin'
 
 @description('Azure Sql Server Admin Password')
 //@secure()
@@ -33,14 +33,14 @@ param name string = uniqueString(resourceGroup().id)
 
 @description('Generated from /subscriptions/acc26051-92a5-4ed1-a226-64a187bc27db/resourceGroups/rg_AADAccessAzureSQLBlazorSvr/providers/Microsoft.Sql/servers/rbac-demo-server')
 resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
-  name: 'rbacdemoserver' // will camel case work here? this becomes part of the domain name
-  properties: {
-    administratorLogin: azureSqlServerAdminAccount
-    administratorLoginPassword:  azureSqlServerAdminPassword
-    version: '12.0'
-    minimalTlsVersion: '1.2'
-    publicNetworkAccess: 'Enabled'
-    /*
+    name: 'rbacdemoserver' // will camel case work here? this becomes part of the domain name
+    properties: {
+        administratorLogin: azureSqlServerAdminAccount
+        administratorLoginPassword: azureSqlServerAdminPassword
+        version: '12.0'
+        minimalTlsVersion: '1.2'
+        publicNetworkAccess: 'Enabled'
+        /*
     administrators: {
       administratorType: 'ActiveDirectory'
       principalType: 'Application'
@@ -49,42 +49,42 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
       tenantId: '7a838aec-0b9e-4856-a3b5-2b02613f36a2'
       azureADOnlyAuthentication: false
     }*/
-    restrictOutboundNetworkAccess: 'Disabled'
-  }
-  location: sqlsvrLocation
-  tags: {}  
-  
-  resource administrators 'administrators@2022-02-01-preview'={
-    name:'ActiveDirectory'
-    properties:{
-      administratorType: 'ActiveDirectory'
-      login: 'AADAccessAzureSQLBlazorSvr'
-      sid: '81bdf628-7fbd-48f5-a1ca-cd70e07e2d79'
-      tenantId: '7a838aec-0b9e-4856-a3b5-2b02613f36a2'
-    }
-  }
-  
-  resource rbacDemoDatabase 'databases@2021-11-01-preview' = {
-    name: 'rbacDemoDatabase'  
-    sku:{
-      name: 'GP_S_Gen5'
-      tier: 'GeneralPurpose'
-      family: 'Gen5'
-      capacity: 1
-    }    
-
-    properties: {
-      collation: 'SQL_Latin1_General_CP1_CI_AS'
-      maxSizeBytes: 1073741824
-      catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
-      zoneRedundant: false
-      readScale: 'Disabled'
-      autoPauseDelay: 60
-      requestedBackupStorageRedundancy: 'Local'
-      minCapacity: 1
-      isLedgerOn: false
+        restrictOutboundNetworkAccess: 'Disabled'
     }
     location: sqlsvrLocation
     tags: {}
-  }
+
+    resource administrators 'administrators@2022-02-01-preview' = {
+        name: 'ActiveDirectory'
+        properties: {
+            administratorType: 'ActiveDirectory'
+            login: 'AADAccessAzureSQLBlazorSvr'
+            sid: '81bdf628-7fbd-48f5-a1ca-cd70e07e2d79'
+            tenantId: '7a838aec-0b9e-4856-a3b5-2b02613f36a2'
+        }
+    }
+
+    // try with this as a starter and replace 'Standard' with 'Basic' for SKU.
+    // https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.sql/sql-database/main.bicep
+    resource rbacDemoDatabase 'databases@2021-11-01-preview' = {
+        name: 'rbacDemoDatabase'
+        sku: {
+            name: 'Basic'
+            tier: 'Basic'
+        }
+
+        properties: {
+            collation: 'SQL_Latin1_General_CP1_CI_AS'
+            maxSizeBytes: 1073741824
+            catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
+            zoneRedundant: false
+            readScale: 'Disabled'
+            autoPauseDelay: 60
+            requestedBackupStorageRedundancy: 'Local'
+            minCapacity: 1
+            isLedgerOn: false
+        }
+        location: sqlsvrLocation
+        tags: {}
+    }
 }
