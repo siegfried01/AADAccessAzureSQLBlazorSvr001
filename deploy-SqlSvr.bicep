@@ -66,13 +66,17 @@ resource rbacdemoserver 'Microsoft.Sql/servers@2021-11-01-preview' = {
 
     // try with this as a starter and replace 'Standard' with 'Basic' for SKU.
     // https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.sql/sql-database/main.bicep
+    // Use DTU instead of serverless
+    // https://github.com/Azure/bicep/discussions/8569 (Try with this as a starter and replace 'Standard' with 'Basic' for SKU.)->  https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.sql/sql-database/main.bicep
     resource rbacDemoDatabase 'databases@2021-11-01-preview' = {
         name: 'rbacDemoDatabase'
         sku: {
-      name: 'GP_S_Gen5'
-      tier: 'GeneralPurpose'
-      family: 'Gen5'
-      capacity: 1
+            //name: 'GP_S_Gen5'
+            //tier: 'GeneralPurpose'
+            //family: 'Gen5'
+            //capacity: 1
+            name: 'Basic'
+            tier: 'Basic'
         }
 
         properties: {
